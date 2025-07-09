@@ -4,6 +4,7 @@ import os
 from bs4 import BeautifulSoup
 import time
 from datetime import datetime, timedelta
+import requests
 import threading
 import logging
 import json
@@ -16,9 +17,11 @@ class MecaluxConnector:
     def __init__(self, logger):
         self.import_folder_path = os.getenv('MECALUX_IMPORT_FOLDER_PATH')
         self.export_folder_path = os.getenv('MECALUX_EXPORT_FOLDER_PATH')
+        self.post_url = os.getenv('POST_URL')
         self.logger = logger
         self.logger.info(f'MecaluxConnector initialized')
         self.list_of_communicates = []
+
 
     def one_xml_scan(self):
         self.list_of_communicates = []
@@ -52,9 +55,9 @@ class MecaluxConnector:
                 shipping_finalization_list = soup.find_all('ShippingOrderFinalization')
                 for finalization in shipping_finalization_list:
                     temp_dic = {}
+                    temp_dic['Flag'] = 'close'
                     temp_dic['SorCode'] = finalization.find('SorCode').text
-                    temp_dic['status'] = 'closed'
-                    temp_dic['timestamp'] = datetime.now()
+                    temp_dic['timestamp'] = datetime.now().isoformat()
                     self.list_of_communicates.append(temp_dic)
                     # SorCode = finalization.find('SorCode')
                     # timestamp = datetime.now()
@@ -70,9 +73,10 @@ class MecaluxConnector:
                 status_change_list = soup.find_all('ShippingOrderStatusChange')
                 for status_change in status_change_list:
                     temp_dic = {}
+                    temp_dic['Flag'] = 'update'
                     temp_dic['SorCode'] = status_change.find('SorCode').text
                     temp_dic['status'] = status_change.find('Status').text
-                    temp_dic['timestamp'] = datetime.now()
+                    temp_dic['update_timestamp'] = datetime.now().isoformat()
                     self.list_of_communicates.append(temp_dic)
                     # SorCode = finalization.find('SorCode')
                     # timestamp = datetime.now()
@@ -88,9 +92,10 @@ class MecaluxConnector:
                 shipping_order_list = soup.find_all('ShippingOrder')
                 for shipping_order in shipping_order_list:
                     temp_dic = {}
+                    temp_dic['Flag'] = 'create'
                     temp_dic['SorCode'] = shipping_order.find('SorCode').text
                     temp_dic['status'] = 'created'
-                    temp_dic['timestamp'] = datetime.now()
+                    temp_dic['timestamp'] = datetime.now().isoformat()
                     temp_dic['material_index'] = shipping_order.find('LneItemCode').text
                     temp_dic['Quantity'] = shipping_order.find('LneQtyOrder').text
                     temp_dic['UOM'] = shipping_order.find('LneQtyUoMCode').text
@@ -104,7 +109,7 @@ class MecaluxConnector:
             self.logger.error(f"error occurred while opening the file {file_path}: {e}")
 
     def send_communicates(self):
-        pass
+        requests.post(self.post_url, json=self.list_of_communicates)
 
     def get_list_of_communicates(self):
         return self.list_of_communicates
