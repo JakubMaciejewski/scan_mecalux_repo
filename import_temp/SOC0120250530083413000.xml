@@ -1,0 +1,9 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ShippingOrderStatusChanges xmlns="urn:wms-schema">
+    <ShippingOrderStatusChange>
+        <Site>Perla</Site>
+        <SorCode>C10000725574</SorCode>
+        <Status>Working</Status>
+        <UpdateDate>2025-05-30T06:34:05Z</UpdateDate>
+    </ShippingOrderStatusChange>
+</ShippingOrderStatusChanges>

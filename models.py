@@ -56,14 +56,24 @@ class MecaluxConnector:
                 for finalization in shipping_finalization_list:
                     temp_dic = {}
                     temp_dic['Flag'] = 'close'
-                    temp_dic['SorCode'] = finalization.find('SorCode').text
+                    sor_code_info = finalization.find('SorCode').text
+                    parts = sor_code_info.replace("___", '_').split('_')  # finding localization, user and id
+                    if len(parts) == 3:  # if format correct
+                        temp_dic['SorCode'] = parts[2]
+                        temp_dic['user'] = parts[1]
+                        temp_dic['location'] = parts[0]
+                        temp_dic['sector'] = 'completion'
+                    elif len(parts) == 1:
+                        temp_dic['SorCode'] = sor_code_info
+                        temp_dic['sector'] = 'delivery'
+                    else:
+                        self.logger.error(f"error occurred while reading sorecode info: {sor_code_info}")
+                        continue
                     temp_dic['timestamp'] = datetime.now().isoformat()
                     self.list_of_communicates.append(temp_dic)
-                    # SorCode = finalization.find('SorCode')
-                    # timestamp = datetime.now()
         except Exception as e:
             self.logger.error(f"error occurred while opening the file {file_path}: {e}")
-            # print(f"error occurred while opening the file {file_path}: {e}")
+
 
     def get_SOC_communicates(self, file_path):
         try:
@@ -74,13 +84,22 @@ class MecaluxConnector:
                 for status_change in status_change_list:
                     temp_dic = {}
                     temp_dic['Flag'] = 'update'
-                    temp_dic['SorCode'] = status_change.find('SorCode').text
+                    sor_code_info = status_change.find('SorCode').text
+                    parts = sor_code_info.replace("___", '_').split('_') # finding localization, user and id
+                    if len(parts) == 3: # if format correct
+                        temp_dic['SorCode'] = parts[2]
+                        temp_dic['user'] = parts[1]
+                        temp_dic['location'] = parts[0]
+                        temp_dic['sector'] = 'completion'
+                    elif len(parts) == 1:
+                        temp_dic['SorCode'] = sor_code_info
+                        temp_dic['sector'] = 'delivery'
+                    else:
+                        self.logger.error(f"error occurred while reading sorecode info: {sor_code_info}")
+                        continue
                     temp_dic['status'] = status_change.find('Status').text
                     temp_dic['update_timestamp'] = datetime.now().isoformat()
                     self.list_of_communicates.append(temp_dic)
-                    # SorCode = finalization.find('SorCode')
-                    # timestamp = datetime.now()
-            # ShippingOrderStatusChange
         except Exception as e:
             self.logger.error(f"error occurred while opening the file {file_path}: {e}")
 
@@ -93,7 +112,20 @@ class MecaluxConnector:
                 for shipping_order in shipping_order_list:
                     temp_dic = {}
                     temp_dic['Flag'] = 'create'
-                    temp_dic['SorCode'] = shipping_order.find('SorCode').text
+                    sor_code_info = shipping_order.find('SorCode').text
+                    parts = sor_code_info.replace("___", '_').split('_')  # finding localization, user and id
+                    if len(parts) == 3: # if format correct
+                        temp_dic['SorCode'] = parts[2]
+                        temp_dic['user'] = parts[1]
+                        temp_dic['location'] = parts[0]
+                        temp_dic['sector'] = 'completion'
+                    elif len(parts) == 1:
+                        temp_dic['SorCode'] = sor_code_info
+                        temp_dic['sector'] = 'delivery'
+                    else:
+                        self.logger.error(f"error occurred while reading sorecode info: {sor_code_info}")
+                        continue
+
                     temp_dic['status'] = 'created'
                     temp_dic['timestamp'] = datetime.now().isoformat()
                     temp_dic['material_index'] = shipping_order.find('LneItemCode').text
@@ -101,10 +133,6 @@ class MecaluxConnector:
                     temp_dic['UOM'] = shipping_order.find('LneQtyUoMCode').text
 
                     self.list_of_communicates.append(temp_dic)
-                    # SorCode = finalization.find('SorCode')
-                    # timestamp = datetime.now()
-            # ShippingOrderStatusChange
-            pass
         except Exception as e:
             self.logger.error(f"error occurred while opening the file {file_path}: {e}")
 

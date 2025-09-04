@@ -1,0 +1,29 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<ShippingOrders xmlns="urn:wms-schema">
+  <ShippingOrder ignoreNull="1">
+    <Operation>S</Operation>
+    <Site>Perla</Site>
+    <Priority>Normal</Priority>
+    <SorCode>C10000725576</SorCode>
+    <SorType>Customer</SorType>
+    <Planning>
+      <PlnAssignedDock>RAMPA_WG_PICKING</PlnAssignedDock>
+    </Planning>
+    <Lines complete="false" transactional="false">
+      <Line>
+        <Operation>S</Operation>
+        <LneNumber>1</LneNumber>
+        <LneItemCode>LHUM-0000-0293</LneItemCode>
+        <LneOwnerCode>PERLA</LneOwnerCode>
+        <LneQuantity>
+          <LneQtyOrder>288</LneQtyOrder>
+          <LneQtyUoMCode>szt</LneQtyUoMCode>
+          <LneQtyAllowExcess>true</LneQtyAllowExcess>
+        </LneQuantity>
+        <LneAttributes>
+          <LneAttLot>147\X\20250618</LneAttLot>
+        </LneAttributes>
+      </Line>
+    </Lines>
+  </ShippingOrder>
+</ShippingOrders>
